@@ -5,7 +5,7 @@ import * as middy from "middy";
 import { cors, httpErrorHandler } from "middy/middlewares";
 
 import { UpdateTodoRequest } from "../../requests/UpdateTodoRequest";
-// import { getUserId } from '../utils'
+import { getUserId } from '../utils'
 
 import { updateTodo } from '../../businessLogic/todos'
 
@@ -14,15 +14,15 @@ export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     console.log(event);
 
-
     const todoId = event.pathParameters.todoId;
 
     const updatedTodo: UpdateTodoRequest = JSON.parse(event.body);
 
+    const userId = getUserId(event)
 
     const key = {
       todoId: todoId,
-      userId: "04",
+      userId,
     };
 
     const newTodo = {

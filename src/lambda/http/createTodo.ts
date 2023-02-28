@@ -1,9 +1,15 @@
-import { APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import 'source-map-support/register'
 import { CreateTodoRequest } from '../../requests/CreateTodoRequest'
 import { createTodo } from '../../businessLogic/todos'
 
-export const handler:APIGatewayProxyHandler = async (event:APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+import * as middy from 'middy'
+import { cors, httpErrorHandler } from 'middy/middlewares'
+import { TodoItem } from '../../models/TodoItem'
+
+import { getUserId } from '../utils'
+
+export const handler = middy(async (event:APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   console.log("Processing event: ", event);
 
   let parsedBody:CreateTodoRequest;
@@ -14,7 +20,9 @@ export const handler:APIGatewayProxyHandler = async (event:APIGatewayProxyEvent)
     console.log("Error parsing event body: ", error);
   }
 
-  await createTodo(parsedBody, "04");
+  const userId = getUserId(event)
+
+  const result:TodoItem = await createTodo(parsedBody, userId);
 
   return {
     statusCode: 201,
@@ -22,7 +30,13 @@ export const handler:APIGatewayProxyHandler = async (event:APIGatewayProxyEvent)
       "Access-Control-Allow-Origin": "*",
     },
     body: JSON.stringify({
-      parsedBody,
+      item: result
     }),
   };
-};
+})
+
+handler.use(httpErrorHandler()).use(
+  cors({
+    credentials: true,
+  })
+);

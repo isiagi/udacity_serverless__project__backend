@@ -1,8 +1,12 @@
-import { APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import 'source-map-support/register'
 import { getUserTodo } from '../../businessLogic/todos'
+import * as middy from 'middy'
+import { cors } from 'middy/middlewares'
 
-export const handler:APIGatewayProxyHandler = async (event:APIGatewayProxyEvent):Promise<APIGatewayProxyResult> => {
+import { getUserId } from '../utils'
+
+export const handler = middy(async (event:APIGatewayProxyEvent):Promise<APIGatewayProxyResult> => {
   console.log('Processing event: ', event)
 
   // const result = await docClient.scan({
@@ -10,7 +14,7 @@ export const handler:APIGatewayProxyHandler = async (event:APIGatewayProxyEvent)
   // }).promise()
 
   // const items = result.Items
-  const userId = '04'
+  const userId = getUserId(event)
 
   const items = await getUserTodo(userId)
 
@@ -23,4 +27,10 @@ export const handler:APIGatewayProxyHandler = async (event:APIGatewayProxyEvent)
       items
     })
   }
-}
+})
+
+handler.use(
+  cors({
+    credentials: true
+  })
+)
