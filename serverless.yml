@@ -7,6 +7,8 @@ plugins:
   # - serverless-plugin-tracing
   - serverless-reqvalidator-plugin
   - serverless-aws-documentation
+  - serverless-dynamodb-local
+  - serverless-offline
 
 provider:
   name: aws
@@ -46,6 +48,15 @@ custom:
       - name: UpdateRequest
         contentType: application/json
         schema: ${file(models/update-todo-model.json)}
+
+  serverless-offline:
+    httpPort: 3003
+
+  dynamodb:
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
 
 functions:
 
