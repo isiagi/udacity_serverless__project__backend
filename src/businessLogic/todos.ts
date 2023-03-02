@@ -1,4 +1,6 @@
 import * as uuid from "uuid";
+import * as AWS from 'aws-sdk'
+import * as AWSXRay from 'aws-xray-sdk'
 
 import { TodoAccess } from "../dataLayer/todoAccess";
 import { TodoItem } from "../models/TodoItem";
@@ -6,7 +8,16 @@ import { CreateTodoRequest } from "../requests/CreateTodoRequest";
 import { DeleteTodoRequest } from "../requests/DeleteItemRequest";
 import { UpdateTodoRequest } from "../requests/UpdateTodoRequest";
 
+const bucketName = process.env.ATTACHMENT_S3_BUCKET
+const urlExpiration = process.env.SIGNED_URL_EXPIRATION
+
+const XAWS = AWSXRay.captureAWS(AWS)
+
 const TodoAccessService = new TodoAccess();
+
+const s3 = new XAWS.S3({
+  signatureVersion: 'v4'
+})
 
 export const getUserTodo = async (userId: string): Promise<TodoItem[]> => {
 
@@ -51,4 +62,12 @@ export const updateTodo = async (key:DeleteTodoRequest, updateTodoRequest: Updat
   }
   return await TodoAccessService.updateTodo(updateBody, keys)
 
+}
+
+export const createAttachmentPresignedUrl = async function getUploadUrl(todoId: string) {
+  return s3.getSignedUrl('putObject', {
+    Bucket: bucketName,
+    Key: todoId,
+    Expires: urlExpiration
+  })
 }
