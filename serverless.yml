@@ -14,9 +14,7 @@ provider:
   name: aws
   runtime: nodejs16.x
 
-  tracing:
-    lambda: true
-    apiGateway: true
+  tracing: true
 
   stage: ${env:stage, 'dev'}
   region: ${env:region, 'us-east-1'}
