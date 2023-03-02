@@ -8,11 +8,17 @@ import { TodoItem } from "../models/TodoItem";
 import { DeleteTodoRequest } from "../requests/DeleteItemRequest";
 import { UpdateTodoRequest } from "../requests/UpdateTodoRequest";
 
+const s3 = new XAWS.S3({
+  signatureVersion: 'v4'
+})
+
 export class TodoAccess {
   constructor(
     private readonly docClient: DocumentClient = createDynamoDBClient(),
     private readonly todosTable = process.env.TODOS_TABLE,
-    private readonly TODOS_CREATED_AT_INDEX = process.env.TODOS_CREATED_AT_INDEX
+    private readonly TODOS_CREATED_AT_INDEX = process.env.TODOS_CREATED_AT_INDEX,
+    private readonly bucketName = process.env.ATTACHMENT_S3_BUCKET,
+    private readonly urlExpiration = process.env.SIGNED_URL_EXPIRATION,
   ) {}
 
   async getUserTodos(userId: string): Promise<TodoItem[]> {
@@ -92,6 +98,14 @@ export class TodoAccess {
     }
 
     return key;
+  }
+
+  getUploadUrl(todoId: string) {
+    return s3.getSignedUrl('putObject', {
+      Bucket: this.bucketName,
+      Key: todoId,
+      Expires: parseInt(this.urlExpiration)
+    })
   }
 }
 
