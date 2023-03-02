@@ -41,6 +41,8 @@ export class TodoAccess {
       })
       .promise();
 
+      // console.log(JSON.stringify(results));
+
     return newItem;
   }
 
@@ -77,7 +79,7 @@ export class TodoAccess {
         Key: key,
         UpdateExpression: "set #name = :name, dueDate = :dueDate, done = :done",
         ExpressionAttributeNames: {
-          "#name": ":name",
+          "#name": "name",
         },
         ExpressionAttributeValues: newTodo,
         ReturnValues: "ALL_NEW",
