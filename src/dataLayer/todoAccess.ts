@@ -42,6 +42,8 @@ export class TodoAccess {
   }
 
   async createTodo(newItem: TodoItem): Promise<TodoItem> {
+    newItem.attachmentUrl = `https://${this.bucketName}.s3.amazonaws.com/${newItem.todoId}`
+    
     await this.docClient
       .put({
         TableName: this.todosTable,
