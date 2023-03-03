@@ -1,12 +1,14 @@
 import * as AWS from "aws-sdk";
 import * as AWSXRay from 'aws-xray-sdk'
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-
-const XAWS = AWSXRay.captureAWS(AWS)
-
 import { TodoItem } from "../models/TodoItem";
 import { DeleteTodoRequest } from "../requests/DeleteItemRequest";
 import { UpdateTodoRequest } from "../requests/UpdateTodoRequest";
+import { createLogger } from "../utils/logger";
+
+const logger = createLogger("todoAccess");
+
+const XAWS = AWSXRay.captureAWS(AWS)
 
 const s3 = new XAWS.S3({
   signatureVersion: 'v4'
@@ -22,7 +24,7 @@ export class TodoAccess {
   ) {}
 
   async getUserTodos(userId: string): Promise<TodoItem[]> {
-    console.log("Getting all groups");
+    logger.info("Getting all groups");
 
     const result = await this.docClient
       .query({
@@ -47,8 +49,6 @@ export class TodoAccess {
       })
       .promise();
 
-      // console.log(JSON.stringify(results));
-
     return newItem;
   }
 
@@ -61,7 +61,7 @@ export class TodoAccess {
         })
         .promise();
     } catch (error) {
-      console.log("Error deleting Todo", error);
+      logger.error("Error deleting Todo", error);
     }
 
     return key;
@@ -94,7 +94,7 @@ export class TodoAccess {
       await this.docClient.update(params).promise();
       
     } catch (error) {
-      console.log("Error deleting Todo", error);
+      logger.error("Error deleting Todo", error);
     }
 
     return key;

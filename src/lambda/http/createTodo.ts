@@ -8,16 +8,19 @@ import { cors, httpErrorHandler } from 'middy/middlewares'
 import { TodoItem } from '../../models/TodoItem'
 
 import { getUserId } from '../utils'
+import { createLogger } from '../../utils/logger'
+
+const logger = createLogger("todoAccess");
 
 export const handler = middy(async (event:APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-  console.log("Processing event: ", event);
+  logger.info("Processing event: ", event);
 
   let parsedBody:CreateTodoRequest;
 
   try {
     parsedBody = JSON.parse(event.body);
   } catch (error) {
-    console.log("Error parsing event body: ", error);
+    logger.error("Error parsing event body: ", error);
   }
 
   const userId = getUserId(event)

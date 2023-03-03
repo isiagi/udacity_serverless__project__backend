@@ -5,15 +5,13 @@ import * as middy from 'middy'
 import { cors } from 'middy/middlewares'
 
 import { getUserId } from '../utils'
+import { createLogger } from '../../utils/logger'
+
+const logger = createLogger("todoAccess");
 
 export const handler = middy(async (event:APIGatewayProxyEvent):Promise<APIGatewayProxyResult> => {
-  console.log('Processing event: ', event)
+  logger.info('Processing event: ', event)
 
-  // const result = await docClient.scan({
-  //   TableName: groupsTable
-  // }).promise()
-
-  // const items = result.Items
   const userId = getUserId(event)
 
   const items = await getUserTodo(userId)
