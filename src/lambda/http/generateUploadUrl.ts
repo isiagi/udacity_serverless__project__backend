@@ -5,11 +5,14 @@ import * as middy from "middy";
 import { cors } from "middy/middlewares";
 
 import { createAttachmentPresignedUrl } from "../../businessLogic/todos";
+import { createLogger } from "../../utils/logger";
 // import { getUserId } from '../utils'
+
+const logger = createLogger("todoAccess");
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    console.log(event);
+    logger.info(event);
     const todoId = event.pathParameters.todoId;
     // TODO: Return a presigned URL to upload a file for a TODO item with the provided id
 

@@ -9,12 +9,14 @@ import { cors, httpErrorHandler } from 'middy/middlewares'
 
 import { deleteTodo } from '../../businessLogic/todos'
 import { getUserId } from '../utils'
+import { createLogger } from "../../utils/logger";
 
+const logger = createLogger("todoAccess");
 
 export const handler = middy(async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-  console.log("Processing event: ", event);
+  logger.info("Processing event: ", event);
 
   const todoId = event.pathParameters.todoId;
 
@@ -25,7 +27,6 @@ export const handler = middy(async (
     userId,
   };
 
-  // console.log("Removing item with key: ", key);
   await deleteTodo(key)
 
 

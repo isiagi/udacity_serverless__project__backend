@@ -33,16 +33,6 @@ provider:
       Resource:
         - "*"
 
-  # iamRoleStatements:
-  #   - Effect: "Allow"
-  #     Action:
-  #       - "dynamodb:PutItem"
-  #       - "dynamodb:Get*"
-  #       - "dynamodb:Scan*"
-  #       - "dynamodb:UpdateItem"
-  #       - "dynamodb:DeleteItem"
-  #     Resource: arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/${self:service}-customerTable-${sls:stage}
-
 custom:
   documentation:
     api:
@@ -150,18 +140,13 @@ functions:
           path: todos/{todoId}/attachment
           cors: true
           authorizer: Auth
+    iamRoleStatementsInherit: true
     iamRoleStatements:
       - Effect: Allow
         Action:
           - s3:PutObject
           - s3:GetObject
         Resource: arn:aws:s3:::${self:provider.environment.ATTACHMENT_S3_BUCKET}/*
-  # getCustomers:
-  #   handler: getCustomers.getCustomers
-  #   events: 
-  #     - httpApi:
-  #         path: /
-  #         method: get
 
 resources:
   Resources:

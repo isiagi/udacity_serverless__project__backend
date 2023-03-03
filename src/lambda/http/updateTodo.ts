@@ -8,11 +8,13 @@ import { UpdateTodoRequest } from "../../requests/UpdateTodoRequest";
 import { getUserId } from '../utils'
 
 import { updateTodo } from '../../businessLogic/todos'
+import { createLogger } from "../../utils/logger";
 
+const logger = createLogger("todoAccess");
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    console.log(event);
+    logger.info(event);
 
     const todoId = event.pathParameters.todoId;
 
